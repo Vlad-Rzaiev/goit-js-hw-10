@@ -1,3 +1,4 @@
+import svgCloseIcon from '../img/close.svg';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import iziToast from 'izitoast';
@@ -14,7 +15,7 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
+    // console.dir(selectedDates[0]);
 
     if (selectedDates[0] < Date.now()) {
       startBtn.setAttribute('disabled', 'true');
@@ -25,23 +26,22 @@ const options = {
         message: 'Please choose a date in the future',
         messageColor: '#ffffff',
         backgroundColor: ' #ef4040',
-        icon: `<svg width="24" height="24">
-                <use xlink:href="../img/icons.svg#icon-close"></use>
-               </svg>`,
+        icon: svgCloseIcon,
         position: 'topRight',
-        timeout: 55000,
+        timeout: 5000,
       });
     } else {
       startBtn.removeAttribute('disabled');
       startBtn.classList.replace('start-btn-disable', 'start-btn-active');
 
       userSelectedDate = selectedDates[0];
-      // const timer = userSelectedDate - Date.now();
 
-      console.log(convertMs(userSelectedDate - Date.now()));
+      // console.log(convertMs(userSelectedDate - Date.now()));
     }
   },
 };
+
+flatpickr(inputDate, options);
 
 function convertMs(ms) {
   const second = 1000;
@@ -57,4 +57,41 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-flatpickr(inputDate, options);
+startBtn.addEventListener('click', () => {
+  startBtn.setAttribute('disabled', 'true');
+  startBtn.classList.replace('start-btn-active', 'start-btn-disable');
+  inputDate.setAttribute('disabled', 'true');
+
+  function updateTimer(data) {
+    document.querySelector('[data-days]').textContent = String(
+      data.days
+    ).padStart(2, '0');
+    document.querySelector('[data-hours]').textContent = String(
+      data.hours
+    ).padStart(2, '0');
+    document.querySelector('[data-minutes]').textContent = String(
+      data.minutes
+    ).padStart(2, '0');
+    document.querySelector('[data-seconds]').textContent = String(
+      data.seconds
+    ).padStart(2, '0');
+  }
+
+  updateTimer(convertMs(userSelectedDate - Date.now()));
+
+  const timerInterval = setInterval(() => {
+    const timeRemaining = convertMs(userSelectedDate - Date.now());
+    updateTimer(timeRemaining);
+
+    if (
+      timeRemaining.days === 0 &&
+      timeRemaining.hours === 0 &&
+      timeRemaining.minutes === 0 &&
+      timeRemaining.seconds === 0
+    ) {
+      clearInterval(timerInterval);
+      inputDate.removeAttribute('disabled');
+      // console.log(timeRemaining);
+    }
+  }, 1000);
+});
