@@ -1,8 +1,8 @@
-import svgCloseIcon from '../img/close.svg';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+import svgXmarkIcon from '../img/xmark.svg';
 
 const inputDate = document.querySelector('#datetime-picker');
 const startBtn = document.querySelector('[data-start]');
@@ -15,28 +15,23 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    // console.dir(selectedDates[0]);
-
     if (selectedDates[0] < Date.now()) {
       startBtn.setAttribute('disabled', 'true');
       startBtn.classList.replace('start-btn-active', 'start-btn-disable');
       iziToast.show({
         title: 'Error!',
         titleColor: '#ffffff',
-        message: 'Please choose a date in the future',
+        message: 'Please choose a date in the future!',
         messageColor: '#ffffff',
-        backgroundColor: ' #ef4040',
-        iconUrl: svgCloseIcon,
+        backgroundColor: '#ef4040',
+        iconUrl: svgXmarkIcon,
         position: 'topRight',
-        timeout: 5000,
       });
     } else {
       startBtn.removeAttribute('disabled');
       startBtn.classList.replace('start-btn-disable', 'start-btn-active');
 
       userSelectedDate = selectedDates[0];
-
-      // console.log(convertMs(userSelectedDate - Date.now()));
     }
   },
 };
@@ -91,7 +86,6 @@ startBtn.addEventListener('click', () => {
     ) {
       clearInterval(timerInterval);
       inputDate.removeAttribute('disabled');
-      // console.log(timeRemaining);
     }
   }, 1000);
 });
